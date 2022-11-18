@@ -4,9 +4,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/fer_r/AndroidStudioProjects/calculadoraPrecios/app/src/main/res/layout/activity_main.xml" value="0.33" />
-        <entry key="..\:/Users/fer_r/AndroidStudioProjects/calculadoraPrecios/app/src/main/res/layout/activity_main2.xml" value="0.25" />
+        <entry key="..\:/Users/fer_r/AndroidStudioProjects/calculadoraPrecios/app/src/main/res/layout/activity_main2.xml" value="0.33" />
+        <entry key="..\:/Users/fer_r/AndroidStudioProjects/calculadoraPrecios/app/src/main/res/layout/carrito.xml" value="0.25" />
         <entry key="..\:/Users/fer_r/AndroidStudioProjects/calculadoraPrecios/app/src/main/res/layout/prueba.xml" value="0.24180327868852458" />
-        <entry key="..\:/Users/fer_r/AndroidStudioProjects/calculadoraPrecios/app/src/main/res/layout/resumen.xml" value="0.25" />
+        <entry key="..\:/Users/fer_r/AndroidStudioProjects/calculadoraPrecios/app/src/main/res/layout/resumen.xml" value="0.33" />
+        <entry key="..\:/Users/fer_r/AndroidStudioProjects/calculadoraPrecios/app/src/main/res/layout/settings_activity.xml" value="0.3170289855072464" />
+        <entry key="..\:/Users/fer_r/AndroidStudioProjects/calculadoraPrecios/app/src/main/res/layout/vistaPrevia.xml" value="0.35052083333333334" />
+        <entry key="..\:/Users/fer_r/AndroidStudioProjects/calculadoraPrecios/app/src/main/res/xml/root_preferences.xml" value="0.3170289855072464" />
       </map>
     </option>
   </component>

@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.carrito);
 
         btnAñadir=findViewById(R.id.generar);
         listCarrito=findViewById(R.id.carrito);
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void cambioAjuste(View view){
         //
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.menu);
         list=findViewById(R.id.listaR);
         list.setAdapter(adaptadorL);
         nProducto = (EditText) findViewById(R.id.nombreProducto);
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void cambioMenu(View view){
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.carrito);
 
         totalI=findViewById(R.id.totaL);
 
@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void cambioAjustes(View V){
-        setContentView(R.layout.resumen);
+        setContentView(R.layout.previsualizacion);
 
         listResumen=findViewById(R.id.listaR);
         totalR = findViewById(R.id.tResumen);
