@@ -10,7 +10,7 @@
         <Preference
             app:key="cargarImagen"
             app:summary="Carga tu logo"
-            app:title="Establecer logo"/>
+            app:title="Establecer logo" />
 
 
     </PreferenceCategory>

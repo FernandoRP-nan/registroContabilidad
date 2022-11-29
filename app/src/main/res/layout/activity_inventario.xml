@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -27,7 +28,7 @@
                 android:id="@+id/volver"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="cambioMenu"
+                android:onClick="cambioAjuste"
                 android:text="Regresar" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -50,14 +51,14 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <EditText
-                android:id="@+id/nombreProducto"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
+                android:id="@+id/cantidadProductoI"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ems="10"
                 android:gravity="start|top"
-                android:hint="Nombre del producto"
-                android:inputType="textMultiLine"
+                android:hint="Cantidad"
+                android:inputType="textMultiLine|numberDecimal"
                 android:minHeight="48dp"
                 android:visibility="visible"
                 tools:visibility="visible" />
@@ -69,14 +70,14 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <EditText
-                android:id="@+id/precioProducto"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
+                android:id="@+id/nombreProductoI"
+                android:layout_width="190dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
                 android:gravity="start|top"
-                android:hint="Precio"
-                android:inputType="textMultiLine|numberDecimal"
+                android:hint="Nombre del producto"
+                android:inputType="textMultiLine"
                 android:minHeight="48dp"
                 android:visibility="visible"
                 tools:visibility="visible" />
@@ -95,12 +96,12 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Button
-                android:id="@+id/generar"
+                android:id="@+id/generarI"
                 android:layout_width="315dp"
                 android:layout_height="wrap_content"
-                android:text="Añadir"
-                android:onClick="añadirProducto"
                 android:enabled="false"
+                android:onClick="añadirProductoI"
+                android:text="Añadir"
 
                 />
 
@@ -114,11 +115,11 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="391dp"
+            android:layout_height="480dp"
             android:orientation="horizontal">
 
             <ListView
-                android:id="@+id/listaR"
+                android:id="@+id/listaI"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>
@@ -137,18 +138,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center|top"
-                    android:text="Menú"
+                    android:text="Inventario"
                     android:textSize="24sp" />
             </FrameLayout>
-
-            <Button
-                android:id="@+id/inventario"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Inventario"
-                android:onClick="cambioInventario"
-                />
 
         </LinearLayout>
     </LinearLayout>

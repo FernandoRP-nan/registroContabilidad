@@ -1,11 +1,19 @@
 package com.example.calculadoraprecios;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
 
+import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -13,8 +21,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.io.File;
@@ -28,12 +38,12 @@ import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
 
-    public Button btnAñadir, btnFinalizarOrden;
-    public ListView list;
+    public Button btnAñadir, btnFinalizarOrden, btnAñadirI;
+    public ListView list, list2I;
     public ListView listCarrito;
     public ListView listResumen;
-    public EditText nProducto;
-    public EditText pProducto;
+    public EditText nProducto, nProductoI;
+    public EditText pProducto, pProductoI;
     public List<String> listaProductos = new ArrayList<>();
     public List<String> listaCarrito = new ArrayList<>();
     public List<String> listaResumen = new ArrayList<>();
@@ -42,9 +52,21 @@ public class MainActivity extends AppCompatActivity {
     public ArrayAdapter<String> adaptadorR;
     public float total=0, totalResumen=0;
     public int clientes=0;
-    public TextView totalI, totalR;
+    public TextView totalI, totalR, nombre;
     public ArrayList<Float> precioslista = new ArrayList<Float>();
     public ArrayList<Float> preciosCarrito = new ArrayList<Float>();
+    public ArrayList<String> estadoOrden = new ArrayList<>();
+
+    public List<String> listaProductosI = new ArrayList<>();
+    public ArrayList<Float> precioslistaI = new ArrayList<Float>();
+    public ArrayAdapter<String> adaptadorI;
+    public List<String> nombreProductosI = new ArrayList<>();
+
+    public enum estados {
+        PENDIENTE, FINALIZADO, PAGADO, CANCELADO
+    }
+
+    public ImageView logo;
 
     /*
     * Lo que la aplicación necesita es que tienes que aprender de forma práctica como usar SQLite,
@@ -62,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
 
         cargarProducto();
         cargarResumen();
+        cargarNombre();
+        cargarImagen();
 
 
     }
@@ -85,6 +109,34 @@ public class MainActivity extends AppCompatActivity {
 
             // check whether both the fields are empty or not
             btnAñadir.setEnabled(!emailInput.isEmpty() && !passwordInput.isEmpty());
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+
+    };
+
+    private TextWatcher textWatcherI = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            nProductoI = (EditText) findViewById(R.id.nombreProductoI);
+            pProductoI = (EditText) findViewById(R.id.cantidadProductoI);
+            btnAñadirI = findViewById(R.id.generarI);
+
+            // get the content of both the edit text
+            String emailInput = nProductoI.getText().toString();
+            String passwordInput = pProductoI.getText().toString();
+
+            // check whether both the fields are empty or not
+            btnAñadirI.setEnabled(!emailInput.isEmpty() && !passwordInput.isEmpty());
         }
 
         @Override
@@ -169,6 +221,11 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.carrito);
 
+        cargarProducto();
+        cargarResumen();
+        cargarNombre();
+        cargarImagen();
+
         totalI=findViewById(R.id.totaL);
 
 
@@ -215,6 +272,111 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void cambioInventario(View V){
+        setContentView(R.layout.activity_inventario);
+
+        list2I=findViewById(R.id.listaI);
+        list2I.setAdapter(adaptadorI);
+        nProductoI = (EditText) findViewById(R.id.nombreProductoI);
+        pProductoI = (EditText) findViewById(R.id.cantidadProductoI);
+        btnAñadirI = findViewById(R.id.generarI);
+
+        nProductoI.addTextChangedListener(textWatcherI);
+        pProductoI.addTextChangedListener(textWatcherI);
+
+
+
+        list2I.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final int posicion = i;
+
+                AlertDialog.Builder dialogo1 = new AlertDialog.Builder(MainActivity.this);
+                dialogo1.setTitle("Importante");
+                dialogo1.setMessage("¿ Elimina este producto ?");
+                dialogo1.setCancelable(false);
+                dialogo1.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogo1, int id) {
+                        listaProductosI.remove(posicion);
+                        precioslistaI.remove(posicion);
+                        nombreProductosI.remove(posicion);
+                        adaptadorI.notifyDataSetChanged();
+                        //guardarProductos();
+                    }
+                });
+                dialogo1.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogo1, int id) {
+
+
+                    }
+                });
+                dialogo1.show();
+
+                return false;
+            }
+        });
+
+        list2I.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final int posicion = i;
+
+                AlertDialog.Builder dialogo1 = new AlertDialog.Builder(MainActivity.this);
+                dialogo1.setTitle("Importante");
+                dialogo1.setMessage("¿ Editar este producto ?");
+                dialogo1.setCancelable(false);
+                dialogo1.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogo1, int id) {
+                        //listaProductosI.remove(posicion);
+                        //listaProductosI.set(posicion,nProductoI.getText().toString().trim());
+                        //precioslistaI.remove(posicion);
+                        precioslistaI.set(posicion,Float.parseFloat(pProductoI.getText().toString().trim()));
+
+                        String texto =" ( "+pProductoI.getText().toString().trim()+" ) "+nombreProductosI.get(posicion);
+
+                        listaProductosI.set(posicion,texto);
+
+                        adaptadorI.notifyDataSetChanged();
+                        //guardarProductos();
+                    }
+                });
+                dialogo1.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogo1, int id) {
+
+
+                    }
+                });
+                dialogo1.show();
+
+                //return false;
+
+            }
+        });
+    }
+
+
+    public void añadirProductoI(View V){
+        System.out.println("si pasó por aquí");
+
+        nProductoI = (EditText) findViewById(R.id.nombreProductoI);
+        pProductoI = (EditText) findViewById(R.id.cantidadProductoI);
+        list2I=findViewById(R.id.listaI);
+
+
+
+        String texto =" ( "+pProductoI.getText().toString().trim()+" ) "+nProductoI.getText().toString().trim();
+
+        precioslistaI.add(Float.valueOf(pProductoI.getText().toString()));
+        nombreProductosI.add(nProductoI.getText().toString());
+
+        nProductoI.getText().clear();
+        pProductoI.getText().clear();
+
+        listaProductosI.add(texto);
+        adaptadorI = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaProductosI);
+        list2I.setAdapter(adaptadorI);
+    }
+
 
 
     public void añadirProducto (View v){
@@ -254,9 +416,11 @@ public class MainActivity extends AppCompatActivity {
 
         totalResumen=totalResumen+total;
 
+        //estadoOrden.add(estados.PENDIENTE.name());
 
+        listaCarrito.add("Estado: "+estados.PENDIENTE.name()+".");
 
-        listaResumen.add(currentDateandTime+"\nCliente "+clientes+":\n"+String.join(", ", listaCarrito) + " \n Total: $"+Float. toString(total));
+        listaResumen.add(currentDateandTime+"\nCliente "+clientes+":\n"+listaCarrito+" \n Total: $"+Float. toString(total));
         adaptadorR = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, listaResumen);
         listCarrito.setAdapter(adaptadorC);
 
@@ -283,8 +447,8 @@ public class MainActivity extends AppCompatActivity {
                 totalResumen=0;
                 clientes=0;
 
-                totalR = findViewById(R.id.tResumen);
-                totalR.setText("Venta del día $"+Float. toString(totalResumen));
+                //totalR = findViewById(R.id.tResumen);
+                //totalR.setText("Venta del día $"+Float. toString(totalResumen));
 
                 listaResumen.removeAll(listaResumen);
                 adaptadorR.notifyDataSetChanged();
@@ -302,13 +466,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void cambioAjustes(View V){
+    public void cambioPrevisualizacion(View V){
         setContentView(R.layout.previsualizacion);
 
         listResumen=findViewById(R.id.listaR);
-        totalR = findViewById(R.id.tResumen);
+        //totalR = findViewById(R.id.tResumen);
 
-        totalR.setText("Venta del día $"+Float. toString(totalResumen));
+        //totalR.setText("Venta del día $"+Float. toString(totalResumen));
+
+        final String[] fonts = {
+                "Finalizado", "Pagado", "Cancelado", "Pendiente"
+        };
+
 
         adaptadorR = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaResumen);
         System.out.println(listaCarrito);
@@ -328,12 +497,13 @@ public class MainActivity extends AppCompatActivity {
                         totalResumen=totalResumen-precioslista.get(posicion).floatValue();
                         listaResumen.remove(posicion);
                         adaptadorR.notifyDataSetChanged();
-                        totalR.setText("Venta del día $"+Float. toString(totalResumen));
+                        //totalR.setText("Venta del día $"+Float. toString(totalResumen));
                         guardarResumen();
                     }
                 });
                 dialogo1.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogo1, int id) {
+
                     }
                 });
                 dialogo1.show();
@@ -341,6 +511,86 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        listResumen.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final int posicion = i;
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Title")
+                        .setItems(fonts, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if ("Finalizado".equals(fonts[which])) {
+
+                                    String nuevoEstado = listaResumen.get(posicion).toString();
+                                    int a=nuevoEstado.indexOf("Estado: ");
+                                    int b=nuevoEstado.indexOf(".");
+                                    String estadoAModificar = nuevoEstado.substring(a+8, b);
+                                    nuevoEstado = nuevoEstado.replace(estadoAModificar,estados.FINALIZADO.name());
+
+                                    listaResumen.set(posicion,nuevoEstado);
+
+                                    adaptadorR.notifyDataSetChanged();
+
+
+                                } else if ("Pagado".equals(fonts[which])) {
+
+                                    String nuevoEstado = listaResumen.get(posicion).toString();
+                                    int a=nuevoEstado.indexOf("Estado: ");
+                                    int b=nuevoEstado.indexOf(".");
+                                    String estadoAModificar = nuevoEstado.substring(a+8, b);
+                                    nuevoEstado = nuevoEstado.replace(estadoAModificar,estados.PAGADO.name());
+
+                                    listaResumen.set(posicion,nuevoEstado);
+
+                                    adaptadorR.notifyDataSetChanged();
+
+                                } else if ("Cancelado".equals(fonts[which])) {
+
+                                    String nuevoEstado = listaResumen.get(posicion).toString();
+                                    int a=nuevoEstado.indexOf("Estado: ");
+                                    int b=nuevoEstado.indexOf(".");
+                                    String estadoAModificar = nuevoEstado.substring(a+8, b);
+                                    nuevoEstado = nuevoEstado.replace(estadoAModificar,estados.CANCELADO.name());
+
+                                    listaResumen.set(posicion,nuevoEstado);
+
+                                    adaptadorR.notifyDataSetChanged();
+
+                                } else if ("Pendiente".equals(fonts[which])) {
+
+                                    String nuevoEstado = listaResumen.get(posicion).toString();
+                                    int a=nuevoEstado.indexOf("Estado: ");
+                                    int b=nuevoEstado.indexOf(".");
+                                    String estadoAModificar = nuevoEstado.substring(a+8, b);
+                                    nuevoEstado = nuevoEstado.replace(estadoAModificar,estados.PENDIENTE.name());
+
+                                    listaResumen.set(posicion,nuevoEstado);
+
+                                    adaptadorR.notifyDataSetChanged();
+
+                                }
+                                // the user clicked on colors[which]
+
+                            }
+                        })
+                        .create()
+                        .show();
+            }
+        });
+    }
+
+
+
+    public void cambioAjustes(View V){
+        //setContentView(R.layout.settings_activity);
+        Intent settingsA = new Intent(this, SettingsActivity.class);
+        startActivity(settingsA);
+
+
     }
 
     public void guardarProductos(){
@@ -502,6 +752,42 @@ public class MainActivity extends AppCompatActivity {
             btnFinalizarOrden.setEnabled(true);
         }
     }
+
+
+    //Este método cargará el nombre de root_preferences.xml
+    public void cargarNombre(){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        String valor = pref.getString("nombreNegocio", "");
+
+        nombre=findViewById(R.id.nombreNegocioV);
+
+
+
+        nombre.setText(valor);
+    }
+
+    public void cargarImagen(){
+
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        //int defaultValue = getResources().getString(" Imagen","");
+        String logoD = sharedPref.getString("cargarImagen", "");
+        System.out.println(logoD + " esto es el logo");
+        Uri path= Uri.parse(logoD);
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.MANAGE_EXTERNAL_STORAGE}, 1);
+
+
+        logo=findViewById(R.id.logoV);
+
+        logo.setImageURI(path);
+
+    }
+
+
+
 
 
 
